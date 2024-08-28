@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id    String  @id  @default(cuid()) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  email String  @unique
+  password  String
+  
+  role  UserRole @default(USER)
+
+  profile Profile?
+  comments  Comment[]
+  watchlist Watchlist[]
+  notifications Notification[]
+  subscription  Subscription?
+}
+
+model Profile {
+  id    String  @id  @default(cuid()) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  firstName String
+  lastName  String
+  avatarUrl String?
+
+  user  User  @relation(fields: [userId], references: [id])
+  userId  String @unique
+}
+
+model Category {
+  id    String  @id  @default(cuid()) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String @unique
+
+  series Series[]
+
+}
+
+model Video {
+  id    String  @id  @default(cuid()) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title String
+  url String
+  m3u8Url String?
+
+  seriesId  String?
+  series  Series? @relation(fields: [seriesId], references: [id])
+
+  comments  Comment[]
+
+}
+
+model Series {
+  id    String  @id  @default(cuid()) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title String
+  poster String
+  description String?
+  episodes  Video[]
+
+  categoryId String?
+  category Category? @relation(fields: [categoryId], references: [id])
+}
+
+model Comment {
+  id    String  @id  @default(cuid()) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  text  String
+  
+  videoId String
+  video Video @relation(fields: [videoId], references: [id])
+
+  userId  String
+  user  User  @relation(fields: [userId], references: [id])
+
+}
+
+model Watchlist {
+  id    String  @id  @default(cuid()) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId  String
+  user  User @relation(fields: [userId],references: [id])
+}
+
+model Notification {
+  id    String  @id  @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  content String
+  read  Boolean @default(false)
+  
+  userId  String
+  user  User @relation(fields: [userId], references: [id])
+  
+}
+
+model Subscription {
+  id    String  @id  @default(cuid()) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stripeId  String
+  status  String
+  userId  String @unique
+  user  User  @relation(fields: [userId], references: [id])
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
