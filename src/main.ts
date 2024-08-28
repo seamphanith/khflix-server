@@ -5,6 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+
   const config = new DocumentBuilder()
     .setTitle('Khflix API')
     .setDescription('ទិន្ន័យ API សំរាប់ប្រើប្រាស់ក្នុងវេបសាយ Khflix')
@@ -22,6 +23,6 @@ async function bootstrap() {
   });
 
   app.enableCors();
-  await app.listen(3000);
+  await app.listen(process.env.POST ||4000 );
 }
 bootstrap();
