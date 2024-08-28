@@ -14,6 +14,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('khflix')
     .addServer('http://localhost:3000/','ប្រើប្រាស់សំរាប់ការអភិវឌ្ឍន៏')
+    .addServer('https://khflix-server.onrender.com/','Production')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
